@@ -4,6 +4,8 @@ var app = express();
 var db = require("./database.js");
 var ctrl = require("./controllers/users.controller.js");
 var md5 = require("md5");
+var users = require('./routes/users.route');
+app.use(users);
 
 // Server port
 var HTTP_PORT = 8000 
@@ -16,27 +18,11 @@ app.get("/", (req, res, next) => {
     res.json({"message":"Ok"})
 });
 
-app.get("/api/users", e => e);
-
-app.get("/api/user/:id", (req, res, next) => {
-    var sql = "select * from user where id = ?"
-    var params = [req.params.id]
-    db.get(sql, params, (err, row) => {
-        if (err) {
-          res.status(400).json({"error":err.message});
-          return;
-        }
-        res.json({
-            "message":"success",
-            "data":row
-        })
-      });
-});
-
 var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.use(bodyParser.urlencoded({ extended: false }))
 app.post("/api/user/", (req, res, next) => {
     var errors=[]
     if (!req.body.password){
