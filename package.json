@@ -2,10 +2,10 @@
   "name": "api-retro",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "node server.js"
+    "app": "nodemon app.js"
   },
   "author": "Allison Julio",
   "license": "ISC",

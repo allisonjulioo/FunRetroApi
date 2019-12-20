@@ -1,5 +1,5 @@
 
-var db = require("../database.js");
+var db = require("../migrations/migration.js");
 var md5 = require("md5");
 var express = require("express");
 var app = express();
@@ -14,28 +14,31 @@ exports.GetUsers = function(req, res, next) {
         }
         res.json({
             "message":"success",
-            "data":rows
+            "data": rows,
+            "length": rows.length,
         });
     });
 };
 
 exports.GetUserById = (req, res, next) => {
-    var sql = "select * from user where id = ?"
-    var params = [req.params.id]
+    const sql = "select * from user where id = ?"
+    const params = [req.params.id]
     db.get(sql, params, (err, row) => {
         if (err) {
           res.status(400).json({"error":err.message});
           return;
         }
-        res.json({
-            "message":"success",
-            "data":row
-        })
+        if (row)
+            res.json({
+                "message":"success",
+                "data":row
+        });
+        else res.json({'error': "No find user by id:" + params})
     });
 }
 // Create user
 exports.CreateUser = (req, res, next) => {
-    var errors=[]
+    const errors = []
     if (!req.body.password){
         errors.push("No password specified");
     }
@@ -46,13 +49,13 @@ exports.CreateUser = (req, res, next) => {
         res.status(400).json({"error":errors.join(",")});
         return;
     }
-    var data = {
+    let data = {
         name: req.body.name,
         email: req.body.email,
         password : md5(req.body.password)
     }
-    var sql ='INSERT INTO user (name, email, password) VALUES (?,?,?)'
-    var params =[data.name, data.email, data.password]
+    const sql ='INSERT INTO user (name, email, password) VALUES (?,?,?)'
+    const params =[data.name, data.email, data.password]
     db.run(sql, params, function (err, result) {
         if (err){
             res.status(400).json({"error": err.message})
@@ -67,7 +70,7 @@ exports.CreateUser = (req, res, next) => {
 }
 // Update user
 exports.UpdateUser = (req, res, next) => {
- var data = {
+ let data = {
         name: req.body.name,
         email: req.body.email,
         password : req.body.password ? md5(req.body.password) : null
