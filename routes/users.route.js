@@ -1,18 +1,9 @@
-var express = require('express');
-var app = express();
-var router = express.Router();
-var users = require('../controllers/users.controller.js');
-var bodyParser = require('body-parser')
-
-// parse application/json
-app.use(bodyParser.json())
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
-
-app.use(function (req, res) {
-  res.setHeader('Content-Type', 'text/plain')
-  res.write('you posted:\n')
-  res.end(JSON.stringify(req.body, null, 2))
-})
+const express = require('express');
+const app = express();
+const router = express.Router();
+const users = require('../controllers/users.controller.js');
+const bodyParser = require('body-parser')
+const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 // Get list users
 router.route('/api/users/')
