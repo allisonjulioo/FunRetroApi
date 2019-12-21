@@ -4,7 +4,7 @@ const md5 = require('md5')
 const user = {
   source: 'bases/user.sqlite',
   create_db: `CREATE TABLE user (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_user INTEGER PRIMARY KEY AUTOINCREMENT,
             name text,
             email text UNIQUE,
             password text,

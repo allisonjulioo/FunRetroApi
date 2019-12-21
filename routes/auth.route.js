@@ -2,16 +2,12 @@ const express = require('express');
 const app = express();
 const router = express.Router();
 
-const retros = require('../controllers/retros.controller.js');
+const auth = require('../controllers/auth.controller.js');
 const bodyParser = require('body-parser')
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-// Get list retros
-router.route('/api/retros/')
-.get(retros.GetRetros);
-
-// Create user
-router.route('/api/retros/')
-.post(urlencodedParser, retros.CreateRetros);
+// auth
+router.route('/api/auth/')
+.post(urlencodedParser, auth.Authenticate);
 
 module.exports = router;

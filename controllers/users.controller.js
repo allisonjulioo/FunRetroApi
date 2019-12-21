@@ -23,7 +23,7 @@ exports.GetUsers = (req, res, next) => {
 }
 
 exports.GetUserById = (req, res, next) => {
-  const sql = 'select * from user where id = ?'
+  const sql = 'select * from user where id_user = ?'
   const params = [req.params.id]
   user_db.get(sql, params, (err, row) => {
     if (err) {
@@ -63,11 +63,15 @@ exports.CreateUser = (req, res, next) => {
       res.status(400).json({ error: err.message })
       return
     }
-    res.json({
-      message: 'success',
-      data: data,
-      id: this.lastID
-    })
+    // Ao criar busca id do usuario criado
+    const sql = 'select * from user where email = ?'
+    const email = [req.body.email]
+    user_db.get(sql, email, (err, row) =>
+      res.json({
+        message: 'success',
+        data: row
+      })
+    )
   })
 }
 // Update user
@@ -82,7 +86,7 @@ exports.UpdateUser = (req, res, next) => {
         name = COALESCE(?,name),
         email = COALESCE(?,email),
         password = COALESCE(?,password)
-        WHERE id = ?`,
+        WHERE id_user = ?`,
     [data.name, data.email, data.password, req.params.id],
     function (err, result) {
       if (err) {
@@ -99,7 +103,7 @@ exports.UpdateUser = (req, res, next) => {
 }
 // Delete user
 exports.DeleteUser = (req, res, next) => {
-  user_db.run('DELETE FROM user WHERE id = ?', req.params.id, (err, result) => {
+  user_db.run('DELETE FROM user WHERE id_user = ?', req.params.id, (err, result) => {
     if (err) {
       res.status(400).json({ error: res.message })
       return
