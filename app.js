@@ -8,15 +8,10 @@ const cors = require('cors')
 app.use(cors())
 app.use(user_routes, board_routes, column_routes, auth)
 
-app.listen(process.env.PORT, function(){
-  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+app.listen(process.env.PORT || 8000, function(){
+  console.log("Express sport %d in %s mode", this.address().port, app.settings.env);
 });
 
-app.use(function (req, res, next) {
-  res.header('Pragma', 'no-cache')
-  res.removeHeader('Pragma')
-  next()
-})
 app.get('/', (req, res, next) => {
   res.json("Api Moe's bar works")
 })
