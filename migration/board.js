@@ -5,10 +5,11 @@ const board = {
   source: 'bases/board.sqlite',
   create_db: `CREATE TABLE board (
             board_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title text,
-            created_date date,
+            title varchar(25),
+            created_date DATETIME,
             user_votes INTEGER,
             limit_votes INTEGER,
+            in_voting INTEGER,
             user_id INTEGER,
             FOREIGN KEY(user_id) REFERENCES user(id_user));
             )`

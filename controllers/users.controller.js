@@ -1,11 +1,11 @@
-var user_db = require('../migration/user.js')
-var md5 = require('md5')
-var express = require('express')
-var app = express()
+const user_db = require('../migration/user.js')
+const md5 = require('md5')
+const express = require('express')
+const app = express()
 
 exports.GetUsers = (req, res, next) => {
-  var sql = 'select * from user'
-  var params = []
+  const sql = 'select * from user'
+  const params = []
   return user_db.all(sql, params, (err, rows) => {
     if (err) {
       res.status(400).json({
@@ -17,7 +17,8 @@ exports.GetUsers = (req, res, next) => {
     res.json({
       message: 'success',
       total: rows.length,
-      data: rows
+      data: rows,
+      password: md5(rows[0].password)
     })
   })
 }
@@ -54,7 +55,7 @@ exports.CreateUser = (req, res, next) => {
   let data = {
     name: req.body.name,
     email: req.body.email,
-    password: md5(req.body.password)
+    password: req.body.password ? md5(req.body.password) : null
   }
   const sql = 'INSERT INTO user (name, email, password) VALUES (?,?,?)'
   const params = [data.name, data.email, data.password]
@@ -68,7 +69,8 @@ exports.CreateUser = (req, res, next) => {
     const email = [req.body.email]
     user_db.get(sql, email, (err, row) =>
       res.json({
-        message: 'success',
+        isValid: true,
+        message: data.name + ' cadastrado com sucesso',
         data: row
       })
     )
@@ -103,11 +105,15 @@ exports.UpdateUser = (req, res, next) => {
 }
 // Delete user
 exports.DeleteUser = (req, res, next) => {
-  user_db.run('DELETE FROM user WHERE id_user = ?', req.params.id, (err, result) => {
-    if (err) {
-      res.status(400).json({ error: res.message })
-      return
+  user_db.run(
+    'DELETE FROM user WHERE id_user = ?',
+    req.params.id,
+    (err, result) => {
+      if (err) {
+        res.status(400).json({ error: res.message })
+        return
+      }
+      res.json({ deleted: 'ok', changes: result })
     }
-    res.json({ deleted: 'ok', changes: result })
-  })
+  )
 }

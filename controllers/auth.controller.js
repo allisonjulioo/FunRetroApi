@@ -3,18 +3,31 @@ const express = require('express')
 const app = express()
 require('dotenv-safe').config()
 const jwt = require('jsonwebtoken')
+const md5 = require('md5')
+const user_db = require('../migration/user.js')
 
 exports.Authenticate = (req, res, next) => {
-  if (req.body.name === 'luiz' && req.body.password === '123') {
-    //auth ok
-    const id = 1 //esse id viria do banco de dados
-    var token = jwt.sign({ id }, process.env.SECRET, {
+  const sql = 'select * from user where email = ? AND password = ?'
+  const params = [req.body.email, md5(req.body.password)]
+  user_db.get(sql, params, (err, row) => {
+    if (err) {
+      res.status(400).json({ error: err.message })
+      return
+    }
+    if (row) {
+      const id = req.params.id_user
+      const token = jwt.sign({ id }, process.env.SECRET, {
       expiresIn: 3600 // expires in 1h
-    })
-    res.status(200).send({ auth: true, token: token })
-  }
-
-  res.status(500).send('Login inválido!')
+      })
+      res.status(200).send({
+        message: 'success',
+        auth: true,
+        id_user: row.id_user,
+        name: row.name,
+        token: token
+      })
+    }
+  })
 }
 
 exports.Logout = (req, res) => {

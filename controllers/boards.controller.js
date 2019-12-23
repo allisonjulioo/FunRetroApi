@@ -75,8 +75,8 @@ exports.CreateBoards = (req, res, next) => {
   if (!req.body.title) {
     errors.push('No title specified')
   }
-  if (!req.body.user_id) {
-    errors.push('No board id specified')
+  if (!req.body.limit_votes) {
+    errors.push('No limite votes specified')
   }
   if (errors.length) {
     res.status(400).json({ error: errors.join(',') })
@@ -84,11 +84,27 @@ exports.CreateBoards = (req, res, next) => {
   }
   let data = {
     title: req.body.title,
-    created_date: new Date(),
+    created_date: new Date().toISOString(),
+    limit_votes: req.body.limit_votes,
+    in_voting:  req.body.in_voting || false,
     user_id: req.body.user_id
   }
-  const sql = `INSERT INTO board (title, created_date, user_id) VALUES (?,?,?)`
-  const params = [data.title, data.created_date, data.user_id]
+  console.log(data.created_date)
+  const sql = `INSERT INTO board (
+    title,
+    created_date,
+    limit_votes,
+    in_voting,
+    user_id
+  )
+  VALUES (?,?,?,?,?)`
+  const params = [
+    data.title,
+    data.created_date,
+    data.limit_votes,
+    data.in_voting,
+    data.user_id
+  ]
   board_db.run(sql, params, (err, result) => {
     if (err) {
       res.status(400).json({ error: err.message })
@@ -106,19 +122,25 @@ exports.UpdateBoard = (req, res, next) => {
   const user_id = req.params.board_id
   let data = {
     title: req.body.title,
-    created_date: new Date(),
+    created_date: new Date().toISOString(),
+    limit_votes: req.body.limit_votes,
+    in_voting:  req.body.in_voting || false,
     user_id: req.body.user_id
   }
   const sql = `UPDATE board SET
         title = COALESCE(?,title),
         created_date = COALESCE(?,created_date),
+        limit_votes = COALESCE(?,limit_votes),
+        in_voting = COALESCE(?,in_voting),
         user_id = COALESCE(?,user_id)
         WHERE user_id = ? AND board_id = ?`
   const params = [
     data.title,
     data.created_date,
+    data.limit_votes,
+    data.in_voting,
     data.user_id,
-    req.body.user_id,
+    req.params.user_id,
     req.params.board_id
   ]
   board_db.run(sql, params, (err, result) => {
