@@ -15,8 +15,5 @@ router.route('/api/columns/:user_id/:board_id')
 router.route('/api/columns/:user_id/:board_id')
 .post(urlencodedParser, columns.CreateColumn);
 
-// Get column by id
-//router.route('/api/columns/:user_id/:column_id')
-//.get(columns.GetColumnsById);
 
 module.exports = router;

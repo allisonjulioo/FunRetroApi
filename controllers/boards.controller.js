@@ -36,7 +36,9 @@ exports.GetBoardsById = (req, res, next) => {
         if (columns) {
           columns.forEach((column, index) => {
             Object.assign(columns[index], {
-              cards: new getCards(column.user_id, column.board_id).then(cards => cards)
+              cards: new getCards(column.user_id, column.board_id).then(
+                cards => cards
+              )
             })
           })
           res.json({
@@ -49,7 +51,7 @@ exports.GetBoardsById = (req, res, next) => {
       })
     else res.json({ error: 'No find board by id:' + params[0] })
   })
-  var data = [];
+  var data = []
   function getCards (user_id, board_id) {
     return new Promise(resolve => {
       column_db.all(
@@ -86,10 +88,9 @@ exports.CreateBoards = (req, res, next) => {
     title: req.body.title,
     created_date: new Date().toISOString(),
     limit_votes: req.body.limit_votes,
-    in_voting:  req.body.in_voting || false,
+    in_voting: req.body.in_voting || false,
     user_id: req.body.user_id
   }
-  console.log(data.created_date)
   const sql = `INSERT INTO board (
     title,
     created_date,
@@ -105,7 +106,7 @@ exports.CreateBoards = (req, res, next) => {
     data.in_voting,
     data.user_id
   ]
-  board_db.run(sql, params, (err, result) => {
+  let stmt = board_db.prepare(sql, params).run((err, result) => {
     if (err) {
       res.status(400).json({ error: err.message })
       return
@@ -114,7 +115,32 @@ exports.CreateBoards = (req, res, next) => {
       message: 'success',
       data: data
     })
+    createDefaultColumns(req.body.user_id, stmt.lastID)
   })
+  function createDefaultColumns (user_id, board_id) {
+    const defaultColumns = [
+      { title: 'Para melhorar', color: '#ff2948' },
+      { title: 'Deu certo', color: '#57b596' },
+      { title: 'Ações', color: '#72809a' }
+    ]
+    for (let i = 0; i < defaultColumns.length; i++) {
+      const column = defaultColumns[i]
+      let data = {
+        title: column.title,
+        color: column.color,
+        user_id: user_id,
+        board_id: board_id
+      }
+      const sql = `INSERT INTO column (title, color, user_id, board_id) VALUES (?,?,?,?)`
+      const params = [data.title, data.color, data.user_id, data.board_id]
+      column_db.run(sql, params, (err, result) => {
+        if (err) {
+          res.status(400).json({ error: err.message })
+          return
+        }
+      })
+    }
+  }
 }
 
 // Update board
@@ -124,7 +150,7 @@ exports.UpdateBoard = (req, res, next) => {
     title: req.body.title,
     created_date: new Date().toISOString(),
     limit_votes: req.body.limit_votes,
-    in_voting:  req.body.in_voting || false,
+    in_voting: req.body.in_voting || false,
     user_id: req.body.user_id
   }
   const sql = `UPDATE board SET

@@ -18,7 +18,6 @@ exports.GetUsers = (req, res, next) => {
       message: 'success',
       total: rows.length,
       data: rows,
-      password: md5(rows[0].password)
     })
   })
 }
@@ -89,8 +88,7 @@ exports.UpdateUser = (req, res, next) => {
         email = COALESCE(?,email),
         password = COALESCE(?,password)
         WHERE id_user = ?`,
-    [data.name, data.email, data.password, req.params.id],
-    function (err, result) {
+    [data.name, data.email, data.password, req.params.id], (err, result) => {
       if (err) {
         res.status(400).json({ error: res.message })
         return

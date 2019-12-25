@@ -26,4 +26,5 @@ router.route('/api/boards/:user_id/:board_id')
 router.route('/api/boards/:user_id/:board_id')
 .delete(urlencodedParser, boards.DeleteBoard);
 
+/* Initil manipulation columns board */
 module.exports = router;
