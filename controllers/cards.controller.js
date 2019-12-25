@@ -56,16 +56,10 @@ exports.GetCards = (req, res, next) => {
 }
 exports.UpdateCard = (req, res, next) => {
   const sql = `UPDATE card set
-        content = COALESCE(?,content),
-        board_id = COALESCE(?,board_id),
-        column_id = COALESCE(?,column_id),
-        user_id = COALESCE(?,user_id)
+        content = COALESCE(?,content)
         WHERE card_id = ?`
   const params = [
     req.body.content,
-    req.params.board_id,
-    req.params.column_id,
-    req.params.user_id,
     req.params.card_id
   ]
   card_db.run(sql, params, (err, card) => {
@@ -82,9 +76,7 @@ exports.UpdateCard = (req, res, next) => {
 }
 exports.DeleteCard = (req, res, next) => {
   card_db.run(
-    'DELETE FROM card WHERE board_id = ? AND column_id = ? AND card_id = ?',
-    req.params.board_id,
-    req.params.column_id,
+    'DELETE FROM card WHERE card_id = ?',
     req.params.card_id,
     (err, result) => {
       if (err) {
