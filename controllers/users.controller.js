@@ -35,7 +35,7 @@ exports.GetUserById = (req, res, next) => {
         message: 'success',
         data: row
       })
-    else res.json({ error: 'No find user by id:' + params })
+    else res.json({ error: true, message: 'No find user by id:' + params })
   })
 }
 // Create user

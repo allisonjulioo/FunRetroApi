@@ -15,9 +15,10 @@ exports.Authenticate = (req, res, next) => {
       return
     }
     if (row) {
+      console.log(req.params.id_user)
       const id = req.params.id_user
       const token = jwt.sign({ id }, process.env.SECRET, {
-      expiresIn: 3600 // expires in 1h
+        expiresIn: 3600 // expires in 1h
       })
       res.status(200).send({
         message: 'success',
@@ -25,6 +26,11 @@ exports.Authenticate = (req, res, next) => {
         id_user: row.id_user,
         name: row.name,
         token: token
+      })
+    } else {
+      res.send({
+        auth: false,
+        message: 'Login ou senha incorretos'
       })
     }
   })
