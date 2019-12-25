@@ -54,3 +54,42 @@ exports.CreateColumn = (req, res, next) => {
     })
   })
 }
+// Update user
+exports.UpdateColumn = (req, res, next) => {
+  let data = {
+    title: req.body.title,
+    color: req.body.color
+  }
+  column_db.run(
+    `UPDATE column set
+        title = COALESCE(?,title),
+        color = COALESCE(?,color)
+        WHERE column_id = ?`,
+    [data.title, data.color, req.params.column_id],
+    (err, result) => {
+      if (err) {
+        res.status(400).json({ error: res.message })
+        return
+      }
+      res.json({
+        message: 'Coluna atualizada',
+        data: data,
+        changes: this.changes
+      })
+    }
+  )
+}
+// Delete user
+exports.DeleteColumn = (req, res, next) => {
+  column_db.run(
+    'DELETE FROM column WHERE column_id = ?',
+    req.params.column_id,
+    (err, result) => {
+      if (err) {
+        res.status(400).json({ error: res.message })
+        return
+      }
+      res.json({ deleted: 'ok', changes: result })
+    }
+  )
+}

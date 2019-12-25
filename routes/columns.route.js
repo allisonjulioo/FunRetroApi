@@ -15,5 +15,12 @@ router.route('/api/columns/:user_id/:board_id')
 router.route('/api/columns/:user_id/:board_id')
 .post(urlencodedParser, columns.CreateColumn);
 
+// Update Column
+router.route('/api/columns/:column_id')
+.patch(urlencodedParser, columns.UpdateColumn);
+
+// Delete Column
+router.route('/api/columns/:column_id')
+.delete(urlencodedParser, columns.DeleteColumn);
 
 module.exports = router;

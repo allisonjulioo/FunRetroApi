@@ -68,8 +68,6 @@ exports.UpdateCard = (req, res, next) => {
     req.params.user_id,
     req.params.card_id
   ]
-  console.log(req.params)
-
   card_db.run(sql, params, (err, card) => {
     if (err) {
       res.status(400).json({ error: res.message })

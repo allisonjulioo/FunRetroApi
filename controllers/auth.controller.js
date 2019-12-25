@@ -15,7 +15,6 @@ exports.Authenticate = (req, res, next) => {
       return
     }
     if (row) {
-      console.log(req.params.id_user)
       const id = req.params.id_user
       const token = jwt.sign({ id }, process.env.SECRET, {
         expiresIn: 3600 // expires in 1h
